@@ -16,3 +16,11 @@ jobs:
 
       - name: Build Docker Image
         run: docker build -t dns-monitor:latest .
+
+      - name: Login to GitHub Container Registry
+        run: echo ${{ secrets.githubdockerregistry }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Tag and Push Docker Image
+        run: |
+          docker tag dns-monitor:latest ghcr.io/${{ github.repository }}:latest
+          docker push ghcr.io/${{ github.repository }}:latest
