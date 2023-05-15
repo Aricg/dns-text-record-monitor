@@ -8,4 +8,11 @@ See a domains text records
 dig +short TXT "$domain"
 ```
 
+login to github docker registry and pull the docker image
+
+```bash
+docker login ghcr.io -u <username> -p <personal-access-token>
+docker pull ghcr.io/aricg/dns-text-record-monitor:latest
+
+```
 
