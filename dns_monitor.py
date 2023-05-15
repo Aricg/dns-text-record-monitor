@@ -3,11 +3,14 @@
 import dns.resolver
 import time
 import os
+import argparse
 
-# You can replace these with environment variables or command line arguments
-hostname = "futurestay.com"
-substring = "google-site-verification"
-d = 5
+# Command-line arguments
+parser = argparse.ArgumentParser(description='Monitor DNS TXT records.')
+parser.add_argument('--hostname', type=str, default=os.getenv('HOSTNAME', 'futurestay.com'))
+parser.add_argument('--substring', type=str, default=os.getenv('SUBSTRING', 'google-site-verification'))
+parser.add_argument('--d', type=int, default=os.getenv('DELAY', 5))
+args = parser.parse_args()
 
 # Store the keys
 keys = set()
@@ -23,11 +26,12 @@ def monitor_dns(hostname, substring, d):
                 for txt_string in rdata.strings:
                     txt_string = txt_string.decode()
                     if substring in txt_string:
-                        key = txt_string.split('=')[-1]
-                        new_keys.add(key)
-                        if key not in keys:
-                            found_new_key = True
-                            print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - Found new '{substring}' key '{key}' in TXT record of {hostname}")
+                        key = txt_string.split('=')[-1] if '=' in txt_string else None
+                        if key:
+                            new_keys.add(key)
+                            if key not in keys:
+                                found_new_key = True
+                                print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - Found new '{substring}' key '{key}' in TXT record of {hostname}")
             keys = new_keys
             if not found_new_key:
                 print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - No new keys found in this loop for {hostname}")
@@ -35,5 +39,4 @@ def monitor_dns(hostname, substring, d):
             print(f"Error occurred: {e}")
         time.sleep(d)
 
-monitor_dns(hostname, substring, d)
-
+monitor_dns(args.hostname, args.substring, args.d)
