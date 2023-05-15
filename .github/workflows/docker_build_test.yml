@@ -27,5 +27,6 @@ jobs:
 
       - name: Tag and Push Docker Image
         run: |
-          docker tag dns-monitor:latest ghcr.io/${{ github.repository }}:latest
-          docker push ghcr.io/${{ github.repository }}:latest
+          REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker tag dns-monitor:latest ghcr.io/$REPO_NAME:latest
+          docker push ghcr.io/$REPO_NAME:latest
